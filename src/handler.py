@@ -4,6 +4,7 @@
 import os
 import time
 import pandas as pd
+import numpy as np
 from itertools import compress
 from sklearn.preprocessing import StandardScaler
 
@@ -36,11 +37,11 @@ class Parameters ():
         
         if typ == "default":
             default_list = inputs['DefaultAssigment']
-            self.type = default_list[self.svc_name] if self.svc_name in default_list.keys() else "dense"
-        elif typ in ("dense", "semi-dense", "sparse"):
+            self.type = default_list[self.svc_name] if self.svc_name in default_list.keys() else "kmeans"
+        elif typ in ("ward", "kmeans"):
             self.type = typ
         else:
-            self.type = "dense"
+            self.type = "kmeans"
         
         self.cluster_max_size = 1500 if int(inputs['RoutingParameters']['cluster_max_size']) == 0 else int(inputs['RoutingParameters']['cluster_max_size'])
         self.cluster_min_size = int(inputs['RoutingParameters']['cluster_min_size'])
@@ -99,6 +100,34 @@ class PreProcessing():
         
         return data_repartition
     
+    def validate_input_data (data):
+        
+        message = ""
+        index = data.filter(regex='olume').columns
+        if data[index].isna().values.any():
+            values = np.unique(np.where(data[index].isna())[0])
+            data.drop(values, inplace = True)
+            data.reset_index(drop=True, inplace=True)   
+            message = message + "Coluna volume contém valores vazios nas posições {}".format(values)
+       
+        index = data.filter(regex='hipm').columns
+        if data[index].isna().values.any():
+            values = np.unique(np.where(data[index].isna())[0])
+            data.drop(values, inplace = True)
+            data.reset_index(drop=True, inplace=True)            
+            message = message + "Coluna Shipment contém valores vazios nas posições {}".format(values)
+            
+        index = data.filter(regex='atit|ongi').columns
+        if data[index].isna().values.any():
+            values = np.unique(np.where(data[index].isna())[0])
+            data.drop(values, inplace = True)
+            data.reset_index(drop=True, inplace=True)   
+            message = message + "Lat Long contém valores vazios nas posições {}".format(values)
+        
+        alert = "Input data format has been validated!" if message == "" else message
+        
+        return (data, alert)
+        
     def filter_input_data (data):
         #Just for test
         # data = data.copy()
@@ -116,10 +145,6 @@ class PreProcessing():
     def get_geolocate_data (data):
         data_filter = data[['Lat','Long']]
         
-        if data_filter.isna().values.any():
-            data_filter.dropna(inplace=True)
-            data_filter.reset_index(drop=True, inplace=True)
-                
         return data_filter
     
     def get_scaled_data (data):
@@ -160,13 +185,13 @@ class PostProcessing():
         
         return pd.DataFrame(output_data)
     
-    def generate_output_folder (output_directory, svc_name, key):
+    def generate_output_folder (output_directory, svc_name, n_packages, key):
         
-        folder_name = str(svc_name) + str(key)
+        folder_name = str(svc_name) + '_' + str(n_packages) + str(key)
         folder_directory = output_directory + folder_name 
         os.makedirs(folder_directory, exist_ok=True)
         
-        return folder_directory
+        return folder_directory, folder_name
         
     def write_output_data (output_data, folder_directory):
         
@@ -177,9 +202,9 @@ class PostProcessing():
             output_file_name = str(n) +"_"+ str(len(filter_data))
             filter_data.to_csv( folder_directory + "/" + output_file_name +".csv", index=False, header = False)
             
-    def write_cluster_map (cluster_map, svc_name, num_cluster, folder_directory, key):
+    def write_cluster_map (cluster_map, num_cluster, folder_name, folder_directory):
                
-        file_name = svc_name + "_" + str(key) + '__' + str(num_cluster)
+        file_name = folder_name + '_' + str(num_cluster)
         cluster_map.save(folder_directory + "/" + file_name +'.html')  
          
         

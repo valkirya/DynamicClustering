@@ -75,7 +75,7 @@ class Metrics():
             
         best_k = min_num_cluster + k
                      
-        return best_k, n
+        return (best_k, n-min_num_cluster)
     
     """
     The elbow method calculates the Within-cluster-sum of Squared Errors (WSS) for different values of k,and choose the k for which WSS becomes first starts to diminish. 

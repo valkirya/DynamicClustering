@@ -10,17 +10,20 @@ import time
 import os
 
 # Main Function 
-def run_model (inputs, file_name = None):  
-                
+def run_model (inputs, file_name = None):            
    
     ####################### Reading Parameters ######################## 
     
-    param = Parameters (inputs)
-    AppLogging.startMessage(param) 
+    param = Parameters (inputs, file_name)
+    AppLogging.startMessage(param)
+    AppLogging.setConfig(param.output_directory)   
     
     ####################### Reading Input Data ########################   
     
-    input_data = PreProcessing.read_input_data (file_name, param.input_directory) 
+    input_data = PreProcessing.read_input_data (param.input_file) 
+    input_data, alerts = PreProcessing.validate_input_data (input_data)
+    AppLogging.inputValidationMessage (alerts)
+    
     data_repartition = PreProcessing.split_input_data (input_data, param.vol_filter_lower_bound, param.vol_filter_upper_bound, param.vol_filter_min_cluster_size)
     AppLogging.volumeFilteringMessage(data_repartition, param)
       
@@ -28,7 +31,7 @@ def run_model (inputs, file_name = None):
         
         AppLogging.dataMessage(key, value)
         split_data = input_data.iloc[value].reset_index(drop=True)
-        split_data = input_data
+        #split_data = input_data
         
         try:
 
@@ -78,17 +81,19 @@ def run_model (inputs, file_name = None):
            
             labels, sizes, violated_points = PostProcessing.validate_output_data (filter_data, labels, sizes) 
             AppLogging.latlongAdjustmentMessage(violated_points) 
-            
-            folder_directory = PostProcessing.generate_output_folder (param.output_directory, param.svc_name, key)    
+           
             output_data = PostProcessing.generate_output_data (filter_data, labels)
-            PostProcessing.write_output_data(output_data, folder_directory)
+            output_folder, output_name = PostProcessing.generate_output_folder (param.output_directory, param.svc_name, len(output_data), key)
+            PostProcessing.write_output_data(output_data, output_folder)
+            
+            #################  Print Maps   ########################
             
             if param.plot :
                 centers = list(map( lambda x : model.calculate_geo_cluster_center(labels, x), range(model.num_cluster)))
                 cluster_map = Plots.cluster_iteractive_view(model.geo_data, labels, sizes, centers)  
-                PostProcessing.write_cluster_map (cluster_map, param.svc_name, model.num_cluster, folder_directory, key)
-                    
-            AppLogging.endMessage(sizes, folder_directory)      
+                PostProcessing.write_cluster_map (cluster_map, model.num_cluster, output_name, output_folder)
+                     
+            AppLogging.endMessage(sizes, output_folder)     
         
         except Exception:
             AppLogging.errorMessage()
@@ -122,7 +127,7 @@ def several_tests (inputs):
           
 def csv_test (inputs):
     
-    file_name = "SRO1.csv"
+    file_name = r"C:\Users\lcota\Desktop\SSP7PM.csv"
     inputs['ServiceCenterParameters']['name'] = os.path.splitext(file_name)[0]
     run_model(inputs, file_name)
     

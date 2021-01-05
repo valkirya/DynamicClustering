@@ -1,15 +1,15 @@
 {
         
   "ServiceCenterParameters": {
-    "name": "SAL1",
+    "name": "SSP7",
     "type": "default"
   },
   
   "RoutingParameters": {
-    "cluster_max_size": 1500,
+    "cluster_max_size": 2500,
     "cluster_min_size": 50,
-    "lower_bound_vol_filter": 0.001,
-    "upper_bound_vol_filter": 0.03,
+    "lower_bound_vol_filter": 0.03,
+    "upper_bound_vol_filter": 0.001,
     "minimum_cluster_size_vol_filter": 50
   },
   

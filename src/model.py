@@ -28,7 +28,7 @@ class Clusters():
            
     def clustering_algorithm (self):
         
-        if self.param.type == "sparse":
+        if self.param.type == "ward":
 
             ## connectivity matrix for structured Ward
             connectivity = kneighbors_graph(self.model_data,
