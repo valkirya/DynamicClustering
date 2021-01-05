@@ -1,0 +1,62 @@
+{
+        
+  "ServiceCenterParameters": {
+    "name": "SAL1",
+    "type": "default"
+  },
+  
+  "RoutingParameters": {
+    "cluster_max_size": 1500,
+    "cluster_min_size": 50,
+    "lower_bound_vol_filter": 0.001,
+    "upper_bound_vol_filter": 0.03,
+    "minimum_cluster_size_vol_filter": 50
+  },
+  
+   "GeneralParameters": {
+    "num_experiments": 10,
+    "plot_maps": true
+  },
+  
+  "DBSCANParameters": {
+    "maximum_distance": 0.5,
+    "neighborhood_size": 10
+  },
+  
+  "KmeansParameters": {
+    "tolerance": 0.00001,
+    "num_initialization": 10
+  },
+  
+  "HierarchicalParameters": {
+    "num_neighbors": 50
+  },
+  
+  "BalanceParameters": {
+    "num_closest_neighbors": 1,
+    "feasibility_threshold": 375
+  },
+  
+  "RefiningParameters": {
+    "neighborhood_size":3,  
+    "osrm_request_limit": 1000
+  },
+  
+  "DefaultAssigment": {
+      "SSP7": "dense",
+      "SRS1": "semi-dense",
+      "SPR1": "semi-dense",
+      "SBA1": "semi-dense",
+      "SAM1": "semi-dense",
+      "SMG3": "sparse",
+      "SMG4": "sparse",
+      "SSP4": "semi-dense",
+      "SGO1": "semi-dense",
+      "SDF1": "semi-dense",
+      "STL1": "semi-dense",
+      "SQR1": "semi-dense",
+      "SCF2": "dense",
+      "SRO1": "semi-dense" 
+    }
+      
+}

@@ -1,0 +1,12 @@
+Atributos
+points Coordenadas de pontos de entrada.
+
+vertices Coordenadas dos vértices de Voronoi.
+
+ridge_points Índices dos pontos entre os quais se encontra cada borda de Voronoi.
+
+ridge_vertices Índices dos vértices de Voronoi formando cada borda de Voronoi.
+
+regions Índices dos vértices de Voronoi formando cada região de Voronoi. -1 indica vértice fora do diagrama de Voronoi.
+
+point_region Índice da região de Voronoi para cada ponto de entrada. Se a opção qhull “Qc” não foi especificada, a lista conterá -1 para pontos que não estão associados a uma região de Voronoi.
