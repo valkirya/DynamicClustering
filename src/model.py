@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
-from math import ceil
 
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.neighbors import kneighbors_graph
 from scipy.spatial import Voronoi, voronoi_plot_2d
 from sklearn.metrics import pairwise_distances, pairwise_distances_argmin
 
-import multiprocessing as pool
-from src.osrm import call_request
+#import multiprocessing as pool
+#from osrm import call_request
+#from math import ceil
 
 class Clusters():
     
@@ -28,7 +28,7 @@ class Clusters():
            
     def clustering_algorithm (self):
         
-        if self.param.type == "ward":
+        if self.param.type == "Disperso":
 
             ## connectivity matrix for structured Ward
             connectivity = kneighbors_graph(self.model_data,
@@ -239,44 +239,44 @@ class Clusters():
                 
         return labels, sizes
         
-    def get_osrm_distances (self, centers):
+    # def get_osrm_distances (self, centers):
         
-        # convert list of list in list of tuples
-        centers_data = list(map(tuple, centers)) 
-        points_data = list(map(tuple, self.geo_data.to_numpy())) 
+    #     # convert list of list in list of tuples
+    #     centers_data = list(map(tuple, centers)) 
+    #     points_data = list(map(tuple, self.geo_data.to_numpy())) 
         
-        totalPoints = len(points_data)
-        nPointsPerRequest = ceil(self.param.osrm_request_limit/self.num_cluster)
+    #     totalPoints = len(points_data)
+    #     nPointsPerRequest = ceil(self.param.osrm_request_limit/self.num_cluster)
         
-        # particionando data em blocos para cada requisição
-        subdata = [centers_data + points_data[x:x+nPointsPerRequest] for x in range(0, totalPoints, nPointsPerRequest)]       
-        parameters = [(subdata[x], self.num_cluster) for x in range(len(subdata))]
+    #     # particionando data em blocos para cada requisição
+    #     subdata = [centers_data + points_data[x:x+nPointsPerRequest] for x in range(0, totalPoints, nPointsPerRequest)]       
+    #     parameters = [(subdata[x], self.num_cluster) for x in range(len(subdata))]
         
-        centersDist = []
-        centersDura = []
+    #     centersDist = []
+    #     centersDura = []
         
-        # normal call
-        aux = 0
-        for x in parameters:
-            print(aux)
-            dataDist, dataDura = call_request(x[0], x[1])
-            centersDist.extend(dataDist)
-            centersDura.extend(dataDura)
-            aux +=1 
+    #     # normal call
+    #     aux = 0
+    #     for x in parameters:
+    #         print(aux)
+    #         dataDist, dataDura = call_request(x[0], x[1])
+    #         centersDist.extend(dataDist)
+    #         centersDura.extend(dataDura)
+    #         aux +=1 
             
-        #parallel call
-        # p = pool.Pool(pool.cpu_count())
-        # for dataDist, dataDura in p.starmap(call_request, parameters):
-        #     centersDist.extend(dataDist)
-        #     centersDura.extend(dataDura)
+    #     #parallel call
+    #     # p = pool.Pool(pool.cpu_count())
+    #     # for dataDist, dataDura in p.starmap(call_request, parameters):
+    #     #     centersDist.extend(dataDist)
+    #     #     centersDura.extend(dataDura)
   
-        # p.close()
-        # p.join()
+    #     # p.close()
+    #     # p.join()
 
-        matrixDist = np.array(centersDist)
-        matrixDura = np.array(centersDura)
+    #     matrixDist = np.array(centersDist)
+    #     matrixDura = np.array(centersDura)
         
-        return (matrixDist, matrixDura)
+    #     return (matrixDist, matrixDura)
 
     def fine_adjustement (self, cluster_labels, cluster_sizes):
         

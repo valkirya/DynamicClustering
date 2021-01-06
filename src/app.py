@@ -8,15 +8,20 @@
 from src.handler import Parameters, PreProcessing, PostProcessing
 from src.model import Clusters
 from src.metrics import Metrics
-from src.visualization import Plots
+#from src.visualization import Plots
 from src.logInfo import AppLogging 
+
+import json
 
 # Main Function 
 def run_model (inputs, file_name = None):  
-                    
-    ####################### Reading Parameters ######################## 
     
-    param = Parameters (inputs, file_name)
+    with open('data/configuration.json', encoding = 'UTF8') as input_json:
+        configs = json.load(input_json)
+                
+    ####################### Reading Parameters ######################## 
+    param = Parameters (configs, inputs, file_name)
+
     AppLogging.startMessage(param)
     AppLogging.setConfig(param.output_directory)   
     
@@ -89,9 +94,10 @@ def run_model (inputs, file_name = None):
             #################  Print Maps   ########################
             
             if param.plot :
-                centers = list(map( lambda x : model.calculate_geo_cluster_center(labels, x), range(model.num_cluster)))
-                cluster_map = Plots.cluster_iteractive_view(model.geo_data, labels, sizes, centers)  
-                PostProcessing.write_cluster_map (cluster_map, model.num_cluster, output_name, output_folder)
+                print()
+                #centers = list(map( lambda x : model.calculate_geo_cluster_center(labels, x), range(model.num_cluster)))
+                #cluster_map = Plots.cluster_iteractive_view(model.geo_data, labels, sizes, centers)  
+                #PostProcessing.write_cluster_map (cluster_map, model.num_cluster, output_name, output_folder)
                      
             AppLogging.endMessage(sizes, output_folder)  
             

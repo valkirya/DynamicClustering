@@ -1,7 +1,7 @@
 #************************************************************
 # Clustering Geospatial Data - Dynamic Clustering
 # Author: Julia Couto and Lara Cota
-# Mercado Envios
+# Mercado Envios - 2020
 #************************************************************
 
 '''

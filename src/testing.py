@@ -31,7 +31,7 @@ def run_model (inputs, file_name = None):
         
         AppLogging.dataMessage(key, value)
         split_data = input_data.iloc[value].reset_index(drop=True)
-        #split_data = input_data
+        split_data = input_data
         
         try:
 
@@ -127,7 +127,7 @@ def several_tests (inputs):
           
 def csv_test (inputs):
     
-    file_name = r"C:\Users\lcota\Desktop\SSP7PM.csv"
+    file_name = r"C:\Users\lcota\Desktop\SSP7.csv"
     inputs['ServiceCenterParameters']['name'] = os.path.splitext(file_name)[0]
     run_model(inputs, file_name)
     

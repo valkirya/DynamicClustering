@@ -1,6 +1,6 @@
 from sklearn.metrics import silhouette_score
 from sklearn.cluster import KMeans, DBSCAN
-from src.visualization import Plots
+#from src.visualization import Plots
 from math import sqrt
 import numpy as np
 import pandas as pd
@@ -97,7 +97,7 @@ class Metrics():
         ## best k: the large distance value
         k = distances.index(max(distances))
         
-        if plot: Plots.curve_best_num_cluster ("The Elbow Method", wcss, min_num_cluster, min_num_cluster + k)
+        #if plot: Plots.curve_best_num_cluster ("The Elbow Method", wcss, min_num_cluster, min_num_cluster + k)
         
         return k
 

@@ -1,5 +1,7 @@
 import PySimpleGUI as sg
+#import PySimpleGUIWeb as sg
 import json
+import numpy as np
 from src.app import run_model
        
 def createGUI ():
@@ -10,28 +12,43 @@ def createGUI ():
         
     #Define window layout
     layout = [
-                [
+                [sg.Text('Clusterização Dinâmica ', font=('Helvetica', 13), justification='center', size=(60, 1)),
+                 ],
+                [sg.Text(""),],
+                 [
                     sg.Text("Selecione o arquivo de dados: "),
                     sg.In(size=(35, 1), enable_events=True, key="-DATA-"),
                     sg.FileBrowse(file_types=(("CSV File", "*.csv"),),
                                   button_text="Selecionar"),
                 ],
-                [
-                    sg.Text(""),  
+                # [
+                #     sg.Text("Selecione o arquivo de configuração: "),
+                #     sg.In(size=(35, 1), enable_events=True, key="-CONFIG-"),
+                #     sg.FileBrowse(file_types=(("JSON File", "*.json"),),
+                #                   button_text="Selecionar"),
+                # ],
+                #[sg.Text(""),],
+                
+                [sg.Text('_'  * 100, size=(65, 1))],
+
+                [sg.Text('Configuração', font=('Helvetica', 11), justification='left', size=(25, 1)),
+                 sg.Text('Filtros de Volumetria', font=('Helvetica', 11), justification='left', size=(30, 1))],
+                [   sg.Listbox(["Auto", "Denso", "Semi-Denso", "Disperso"], size=(20,4), enable_events=True, key='-LIST-', default_values= "Auto"),
+                 sg.Text("", size=(7,4)),  
+                     sg.Text('Até', size=(5, 1)),
+                      sg.Spin(values=[i for i in np.array(range(0, 100, 1))/1000], initial_value=0, size=(7, 1), key = '-LOWER-'),
+                      sg.Text('A partir de', size=(8, 1)),
+                      sg.Spin(values=[i for i in np.array(range(0, 100, 1))/1000], initial_value=0, size=(7, 1), key = '-UPPER-'),
+                      #sg.Text('Qtde minima de pacotes', size=(18, 1)),
+                      #sg.In(default_text=50, size=(7, 1))],
                       
                 ],
                 [
-                    sg.Text("Selecione o arquivo de configuração: "),
-                    sg.In(size=(35, 1), enable_events=True, key="-CONFIG-"),
-                    sg.FileBrowse(file_types=(("JSON File", "*.json"),),
-                                  button_text="Selecionar"),
-                ],
-                [
                     sg.Text(""),  
                       
-                ],          
+                ],                
                 [
-                    sg.Button("Executar", enable_events=True, key="-RUN-"),
+                    sg.Button("Executar", enable_events=True, key="-RUN-" ),
                 ],
                 [
                     sg.Text(""),  
@@ -71,7 +88,14 @@ def createGUI ():
                         
             if event == "-RUN-":
                                 
-                if fileName and any(inputs):
+                if fileName : #and any(inputs):
+                    
+                    inputs = {}
+                    inputs["RoutingParameters"] = {}
+                    inputs["ServiceCenterParameters"] = {}
+                    inputs["RoutingParameters"]["lower_bound_vol_filter"] = float(values["-LOWER-"])
+                    inputs["RoutingParameters"]["upper_bound_vol_filter"] = float(values["-UPPER-"])
+                    inputs["ServiceCenterParameters"]["type"] = str(values["-LIST-"][0])
                     
                     window['-RUN-'].update(disabled=True)
                     window['-OUTPUT-'].update("Clusterização Dinâmica em execução ...")       
