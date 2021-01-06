@@ -1,8 +1,9 @@
 import PySimpleGUI as sg
 import json
-from api import run_model
+from src.app import run_model
        
 def createGUI ():
+    
     #Define GUI theme
     sg.theme('LightGrey1')
     sg.set_options(auto_size_buttons=True)
@@ -93,6 +94,3 @@ def createGUI ():
             window['-OUTPUT-'].update((str(e)))
                 
     window.close()
-
-if __name__ == '__main__':
-    createGUI()

@@ -1,6 +1,6 @@
 from sklearn.metrics import silhouette_score
 from sklearn.cluster import KMeans, DBSCAN
-from visualization import Plots
+from src.visualization import Plots
 from math import sqrt
 import numpy as np
 import pandas as pd

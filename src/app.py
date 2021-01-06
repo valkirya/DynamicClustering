@@ -5,11 +5,11 @@
 #************************************************************
 
 # Import libraries
-from handler import Parameters, PreProcessing, PostProcessing
-from model import Clusters
-from metrics import Metrics
-from visualization import Plots
-from logInfo import AppLogging 
+from src.handler import Parameters, PreProcessing, PostProcessing
+from src.model import Clusters
+from src.metrics import Metrics
+from src.visualization import Plots
+from src.logInfo import AppLogging 
 
 # Main Function 
 def run_model (inputs, file_name = None):  
@@ -100,5 +100,4 @@ def run_model (inputs, file_name = None):
     except Exception as e:
         AppLogging.errorMessage()         
         return (False, e)
-        
-        
+               

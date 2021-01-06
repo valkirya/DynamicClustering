@@ -8,7 +8,7 @@ from scipy.spatial import Voronoi, voronoi_plot_2d
 from sklearn.metrics import pairwise_distances, pairwise_distances_argmin
 
 import multiprocessing as pool
-from osrm import call_request
+from src.osrm import call_request
 
 class Clusters():
     
