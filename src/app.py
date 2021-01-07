@@ -12,16 +12,22 @@ from src.metrics import Metrics
 from src.logInfo import AppLogging 
 
 import json
+import os, sys
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 # Main Function 
 def run_model (inputs, file_name = None):  
     
-    with open('data/configuration.json', encoding = 'UTF8') as input_json:
+    with open(resource_path('data/configuration.json'), encoding = 'UTF8') as input_json:
         configs = json.load(input_json)
                 
     ####################### Reading Parameters ######################## 
+    
     param = Parameters (configs, inputs, file_name)
-
     AppLogging.startMessage(param)
     AppLogging.setConfig(param.output_directory)   
     
@@ -39,19 +45,23 @@ def run_model (inputs, file_name = None):
             
             AppLogging.dataMessage(key, value)
             split_data = input_data.iloc[value].reset_index(drop=True)
-    
+            AppLogging.statusMessage()
             ####################### Pre Processing Data ########################
             
-            filter_data = PreProcessing.filter_input_data(split_data)       
+            filter_data = PreProcessing.filter_input_data(split_data) 
+            AppLogging.statusMessage()
             geo_data = PreProcessing.get_geolocate_data (filter_data)
+            AppLogging.statusMessage()
             model_data = PreProcessing.get_scaled_data (geo_data)
-                   
+            AppLogging.statusMessage()       
             ############### Choosing the Appropriate Number of Clusters #############
            
             min_num_cluster = Metrics.calculate_min_num_cluster (model_data, param)
+            AppLogging.statusMessage()
             num_cluster, num_tests = Metrics.calculate_best_num_cluster (model_data, param, min_num_cluster)
+            AppLogging.statusMessage()
             AppLogging.metricsMessage(min_num_cluster, num_tests, num_cluster)
-            
+            AppLogging.statusMessage()
             ###################  1) Call Clustering Algorithm ####################
             
             model = Clusters(model_data, geo_data, num_cluster, param)

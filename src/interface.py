@@ -12,10 +12,13 @@ def createGUI ():
         
     #Define window layout
     layout = [
-                [sg.Text('Clusterização Dinâmica ', font=('Helvetica', 13), justification='center', size=(60, 1)),
+                [
+                    sg.Text('Clusterização Dinâmica ', font=('Helvetica', 13), justification='center', size=(60, 1)),
                  ],
-                [sg.Text(""),],
-                 [
+                [
+                    sg.Text(""),
+                ],
+                [
                     sg.Text("Selecione o arquivo de dados: "),
                     sg.In(size=(35, 1), enable_events=True, key="-DATA-"),
                     sg.FileBrowse(file_types=(("CSV File", "*.csv"),),
@@ -28,31 +31,30 @@ def createGUI ():
                 #                   button_text="Selecionar"),
                 # ],
                 #[sg.Text(""),],
-                
-                [sg.Text('_'  * 100, size=(65, 1))],
-
-                [sg.Text('Configuração', font=('Helvetica', 11), justification='left', size=(25, 1)),
-                 sg.Text('Filtros de Volumetria', font=('Helvetica', 11), justification='left', size=(30, 1))],
-                [   sg.Listbox(["Auto", "Denso", "Semi-Denso", "Disperso"], size=(20,4), enable_events=True, key='-LIST-', default_values= "Auto"),
-                 sg.Text("", size=(7,4)),  
-                     sg.Text('Até', size=(5, 1)),
-                      sg.Spin(values=[i for i in np.array(range(0, 100, 1))/1000], initial_value=0, size=(7, 1), key = '-LOWER-'),
-                      sg.Text('A partir de', size=(8, 1)),
-                      sg.Spin(values=[i for i in np.array(range(0, 100, 1))/1000], initial_value=0, size=(7, 1), key = '-UPPER-'),
-                      #sg.Text('Qtde minima de pacotes', size=(18, 1)),
-                      #sg.In(default_text=50, size=(7, 1))],
-                      
+                [
+                    sg.Text('_'  * 100, size=(65, 1))
                 ],
                 [
-                    sg.Text(""),  
-                      
+                    sg.Text('Configuração', font=('Helvetica', 11), justification='left', size=(25, 1)),
+                    sg.Text('Filtros de Volumetria', font=('Helvetica', 11), justification='left', size=(30, 1))
+                ],
+                [   sg.Listbox(["Auto", "Denso", "Semi-Denso", "Disperso"], size=(20,4), enable_events=True, key='-LIST-', default_values= "Auto"),
+                     sg.Text("", size=(7,4)),  
+                     sg.Text('Até', size=(5, 1)),
+                     sg.Spin(values=[i for i in np.array(range(0, 100, 1))/1000], initial_value=0, size=(7, 1), key = '-LOWER-'),
+                     sg.Text('A partir de', size=(8, 1)),
+                     sg.Spin(values=[i for i in np.array(range(0, 100, 1))/1000], initial_value=0, size=(7, 1), key = '-UPPER-'),
+                     #sg.Text('Qtde minima de pacotes', size=(18, 1)),
+                     #sg.In(default_text=50, size=(7, 1))],                     
+                ],
+                [
+                    sg.Text(""),   
                 ],                
                 [
                     sg.Button("Executar", enable_events=True, key="-RUN-" ),
                 ],
                 [
                     sg.Text(""),  
-                      
                 ],
                 [
                     sg.Text(size=(68,2), key='-OUTPUT-', text_color='black', background_color='whitesmoke')
