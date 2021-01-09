@@ -1,11 +1,12 @@
 from sklearn.metrics import silhouette_score
 from sklearn.cluster import KMeans, DBSCAN
+
 #from src.visualization import Plots
 from math import sqrt
 import numpy as np
 import pandas as pd
 
-class Metrics():
+class Measure():
     
     def calculate_min_num_cluster (model_data, param):
         
@@ -30,15 +31,14 @@ class Metrics():
         balance_threshold = param.balance_feasibility_threshold        
         min_testing = min_num_cluster + param.num_experiments
         n = min_num_cluster
-        
+               
         # num test não fixo, minimo de 10 até respeitar balance threshold 
         while n <= min_testing or check_balance == 0: 
 
             kmeans = KMeans(n_clusters = n,
-                           init = 'k-means++',
-                           n_init = param.kmeans_num_initialization,
-                           tol = param.kmeans_tolerance,
-                           random_state = 0).fit(data)
+                            n_init = param.kmeans_num_initialization,
+                            tol = param.kmeans_tolerance,
+                            random_state = 0).fit(data)          
             
             n += 1
             p = [max(0, x-param.cluster_max_size) for x in pd.Series(kmeans.labels_).value_counts()]
@@ -47,9 +47,9 @@ class Metrics():
             wcss.append(kmeans.inertia_)
             labels.append(kmeans.labels_)
             pts.append(sum(p))                                
-               
-        k1 = Metrics.elbow_method (min_num_cluster, wcss)
-        k2 = Metrics.elbow_method (min_num_cluster, pts)
+        
+        k1 = Measure.elbow_method (min_num_cluster, wcss)
+        k2 = Measure.elbow_method (min_num_cluster, pts)
         
         if pts[k1] <= balance_threshold and pts[k2] <= balance_threshold: 
             list_num_cluster = [k1, k2]
@@ -74,7 +74,7 @@ class Metrics():
             k = list_num_cluster[0]
             
         best_k = min_num_cluster + k
-                     
+                    
         return (best_k, n-min_num_cluster)
     
     """

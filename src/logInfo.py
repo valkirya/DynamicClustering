@@ -45,8 +45,8 @@ class AppLogging ():
     def errorMessage ():
         logging.error('The algorithm returned an Error!', exc_info=True)
     
-    def statusMessage ():
-        logging.info('n')
+    def statusMessage (value):
+        logging.info(str(value))
         
                 
         

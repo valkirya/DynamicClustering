@@ -7,7 +7,7 @@
 # Import libraries
 from src.handler import Parameters, PreProcessing, PostProcessing
 from src.model import Clusters
-from src.metrics import Metrics
+from src.measures import Measure
 #from src.visualization import Plots
 from src.logInfo import AppLogging 
 
@@ -24,7 +24,7 @@ def run_model (inputs, file_name = None):
     
     with open(resource_path('data/configuration.json'), encoding = 'UTF8') as input_json:
         configs = json.load(input_json)
-                
+          
     ####################### Reading Parameters ######################## 
     
     param = Parameters (configs, inputs, file_name)
@@ -45,29 +45,25 @@ def run_model (inputs, file_name = None):
             
             AppLogging.dataMessage(key, value)
             split_data = input_data.iloc[value].reset_index(drop=True)
-            AppLogging.statusMessage()
+
             ####################### Pre Processing Data ########################
             
             filter_data = PreProcessing.filter_input_data(split_data) 
-            AppLogging.statusMessage()
             geo_data = PreProcessing.get_geolocate_data (filter_data)
-            AppLogging.statusMessage()
             model_data = PreProcessing.get_scaled_data (geo_data)
-            AppLogging.statusMessage()       
+      
             ############### Choosing the Appropriate Number of Clusters #############
            
-            min_num_cluster = Metrics.calculate_min_num_cluster (model_data, param)
-            AppLogging.statusMessage()
-            num_cluster, num_tests = Metrics.calculate_best_num_cluster (model_data, param, min_num_cluster)
-            AppLogging.statusMessage()
+            min_num_cluster = Measure.calculate_min_num_cluster (model_data, param)
+            num_cluster, num_tests = Measure.calculate_best_num_cluster (model_data, param, min_num_cluster)
             AppLogging.metricsMessage(min_num_cluster, num_tests, num_cluster)
-            AppLogging.statusMessage()
+
             ###################  1) Call Clustering Algorithm ####################
             
             model = Clusters(model_data, geo_data, num_cluster, param)
             labels, sizes, algo_name = model.clustering_algorithm ()
             AppLogging.algorithmNameMessage(algo_name)
-                         
+            
             ################# 2.1) Call Cluster Aglumerative Algorithm  ################# 
             
             violation = model.check_aglomerative_violation(sizes)
@@ -77,7 +73,7 @@ def run_model (inputs, file_name = None):
                 AppLogging.aglomerativeMessage(clusters_viol)
             
             AppLogging.numClustersMessage(model.num_cluster) 
-                
+   
             ################# 2.2) Call Cluster Balance Algorithm  #################  
             
             violation = model.check_balance_violation(sizes)
@@ -87,11 +83,11 @@ def run_model (inputs, file_name = None):
                 labels, sizes, clusters_viol = model.balance_clusters(labels, sizes) 
                 if param.type == 'dense': labels, sizes = model.simple_center_adjustment(labels, sizes)
                 AppLogging.balanceMessage(clusters_viol)
-            
+
             ################# 3) Call Fine Adjustment   ########################
                 
             labels, sizes = model.fine_adjustement (labels, sizes)         
-                        
+            
             #################  Post Processing Data   ########################
            
             labels, sizes, violated_points = PostProcessing.validate_output_data (filter_data, labels, sizes) 
@@ -100,7 +96,7 @@ def run_model (inputs, file_name = None):
             output_data = PostProcessing.generate_output_data (filter_data, labels)
             output_folder, output_name = PostProcessing.generate_output_folder (param.output_directory, param.svc_name, len(output_data), key)
             PostProcessing.write_output_data(output_data, output_folder)
-            
+
             #################  Print Maps   ########################
             
             if param.plot :
