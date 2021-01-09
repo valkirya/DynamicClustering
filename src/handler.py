@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 
 class Parameters ():
     
-    def __init__(self, inputs, fileName):
+    def __init__(self, inputs, user, fileName):
         
         # setting directories
         if fileName is None:
@@ -26,30 +26,31 @@ class Parameters ():
             self.output_directory = os.path.dirname(fileName) + '//outputs//' + ext + '//'
             self.input_file = fileName
             
-        os.makedirs(self.output_directory, exist_ok=True)
+        os.makedirs(self.output_directory, exist_ok=True)       
         
         # setting parameters
         self.num_experiments = 10 if int(inputs['GeneralParameters']['num_experiments']) == 0  else int(inputs['GeneralParameters']['num_experiments'])
         self.plot = bool(inputs['GeneralParameters']['plot_maps'])
-        
+                
         self.svc_name = str(inputs['ServiceCenterParameters']['name'])
-        typ = str(inputs['ServiceCenterParameters']['type'])
+        typ = str(user['ServiceCenterParameters']['type'])
         
-        if typ == "default":
+        
+        if typ == "Auto":
             default_list = inputs['DefaultAssigment']
             self.type = default_list[self.svc_name] if self.svc_name in default_list.keys() else "kmeans"
-        elif typ in ("ward", "kmeans"):
+        elif typ in ("Denso", "Semi-Denso", "Disperso"):
             self.type = typ
         else:
             self.type = "kmeans"
-        
+    
         self.cluster_max_size = 1500 if int(inputs['RoutingParameters']['cluster_max_size']) == 0 else int(inputs['RoutingParameters']['cluster_max_size'])
         self.cluster_min_size = int(inputs['RoutingParameters']['cluster_min_size'])
         
-        self.vol_filter_lower_bound = float(inputs['RoutingParameters']['lower_bound_vol_filter'])
-        self.vol_filter_upper_bound = 1e5 if float(inputs['RoutingParameters']['upper_bound_vol_filter']) == 0 else float(inputs['RoutingParameters']['upper_bound_vol_filter'])        
+        self.vol_filter_upper_bound = float(inputs['RoutingParameters']['upper_bound_vol_filter'])
+        self.vol_filter_lower_bound = 1e5 if float(inputs['RoutingParameters']['lower_bound_vol_filter']) == 0 else float(inputs['RoutingParameters']['lower_bound_vol_filter'])        
         self.vol_filter_min_cluster_size = float(inputs['RoutingParameters']['minimum_cluster_size_vol_filter'])
-        
+               
         self.dbscan_maximum_distance = float(inputs['DBSCANParameters']['maximum_distance'])
         self.dbscan_neighborhood_size = float(inputs['DBSCANParameters']['neighborhood_size'])
         
@@ -89,8 +90,8 @@ class PreProcessing():
     
             index_middle_block = list(set(range(len(volume_values))) - set(index_first_block)  - set(index_last_block))
             
-            data_union = {"_vol_upper_" + str(upper_bound):index_first_block,
-                          "_vol_lower_" + str(lower_bound):index_last_block,
+            data_union = {"_apartir_" + str(upper_bound):index_first_block,
+                          "_ate_" + str(lower_bound):index_last_block,
                           "" : index_middle_block}
             
             data_repartition = {key:value for (key,value) in data_union.items() if len(value)>0 }

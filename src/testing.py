@@ -2,7 +2,7 @@
 # Import libraries
 from handler import Parameters, PreProcessing, PostProcessing
 from model import Clusters
-from metrics import Metrics
+from measures import Measure
 from visualization import Plots
 from logInfo import AppLogging 
 
@@ -31,7 +31,7 @@ def run_model (inputs, file_name = None):
         
         AppLogging.dataMessage(key, value)
         split_data = input_data.iloc[value].reset_index(drop=True)
-        #split_data = input_data
+        split_data = input_data
         
         try:
 
@@ -43,8 +43,8 @@ def run_model (inputs, file_name = None):
             #Plots.data_iteractive_view(geo_data, param.svc_name)
                    
             ############### Choosing the Appropriate Number of Clusters #############
-            min_num_cluster = Metrics.calculate_min_num_cluster (model_data, param)
-            num_cluster, num_tests = Metrics.calculate_best_num_cluster (model_data, param, min_num_cluster)
+            min_num_cluster = Measure.calculate_min_num_cluster (model_data, param)
+            num_cluster, num_tests = Measure.calculate_best_num_cluster (model_data, param, min_num_cluster)
             AppLogging.metricsMessage(min_num_cluster, num_tests, num_cluster)
             
             ###################  1) Call Clustering Algorithm ####################
@@ -127,7 +127,7 @@ def several_tests (inputs):
           
 def csv_test (inputs):
     
-    file_name = r"C:\Users\lcota\Desktop\SSP7PM.csv"
+    file_name = r"C:\Users\lcota\Desktop\SSP7.csv"
     inputs['ServiceCenterParameters']['name'] = os.path.splitext(file_name)[0]
     run_model(inputs, file_name)
     

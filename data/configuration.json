@@ -2,14 +2,14 @@
         
   "ServiceCenterParameters": {
     "name": "SSP7",
-    "type": "default"
+    "type": "auto"
   },
   
   "RoutingParameters": {
     "cluster_max_size": 2500,
     "cluster_min_size": 50,
-    "lower_bound_vol_filter": 0.03,
-    "upper_bound_vol_filter": 0.001,
+    "lower_bound_vol_filter": 0,
+    "upper_bound_vol_filter": 0,
     "minimum_cluster_size_vol_filter": 50
   },
   
@@ -43,20 +43,20 @@
   },
   
   "DefaultAssigment": {
-      "SSP7": "dense",
-      "SRS1": "semi-dense",
-      "SPR1": "semi-dense",
-      "SBA1": "semi-dense",
-      "SAM1": "semi-dense",
-      "SMG3": "sparse",
-      "SMG4": "sparse",
-      "SSP4": "semi-dense",
-      "SGO1": "semi-dense",
-      "SDF1": "semi-dense",
-      "STL1": "semi-dense",
-      "SQR1": "semi-dense",
-      "SCF2": "dense",
-      "SRO1": "semi-dense" 
+      "SSP7": "Denso",
+      "SRS1": "Semi-Denso",
+      "SPR1": "Semi-Denso",
+      "SBA1": "Semi-Denso",
+      "SAM1": "Semi-Denso",
+      "SMG3": "Disperso",
+      "SMG4": "Disperso",
+      "SSP4": "Semi-Denso",
+      "SGO1": "Semi-Denso",
+      "SDF1": "Semi-Denso",
+      "STL1": "Semi-Denso",
+      "SQR1": "Semi-Denso",
+      "SCF2": "Denso",
+      "SRO1": "Semi-Denso" 
     }
       
 }

@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
-from math import ceil
 
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.neighbors import kneighbors_graph
 from scipy.spatial import Voronoi, voronoi_plot_2d
-from sklearn.metrics import pairwise_distances, pairwise_distances_argmin
+from sklearn.metrics import pairwise
 
-import multiprocessing as pool
-from src.osrm import call_request
+#import multiprocessing as pool
+#from osrm import call_request
+#from math import ceil
 
 class Clusters():
     
@@ -28,7 +28,7 @@ class Clusters():
            
     def clustering_algorithm (self):
         
-        if self.param.type == "ward":
+        if self.param.type == "Disperso":
 
             ## connectivity matrix for structured Ward
             connectivity = kneighbors_graph(self.model_data,
@@ -42,10 +42,10 @@ class Clusters():
         else: 
             
             algo = KMeans(n_clusters = self.num_cluster,
-                   init = 'k-means++',
-                   n_init = self.param.kmeans_num_initialization,
-                   tol = self.param.kmeans_tolerance,
-                   random_state = 0).fit(self.model_data)      
+                    init = 'k-means++',
+                    n_init = self.param.kmeans_num_initialization,
+                    tol = self.param.kmeans_tolerance,
+                    random_state = 0).fit(self.model_data)      
         
         labels = algo.labels_.astype(int)
         sizes = pd.Series(labels).value_counts()
@@ -116,7 +116,7 @@ class Clusters():
                  
                 # calculate distance to smaller center 
                 cls_data = np.array(self.geo_data[labels==clst])                 
-                centroids_dist = pairwise_distances(cls_data, center_smaller_cl.reshape(1, 2))
+                centroids_dist = pairwise.pairwise_distances(cls_data, center_smaller_cl.reshape(1, 2))
                 
                 # get the point closest to smaller cluster
                 index_closest_point = centroids_dist.argmin()
@@ -173,7 +173,7 @@ class Clusters():
         filter_neighs = neighs[sizes[neighs] < self.cluster_max_size]
         
         # get N closest neighs
-        neighs_distance = filter_neighs[np.argsort(pairwise_distances(centers[filter_neighs], centers[clst].reshape(1, 2)).flatten())]   
+        neighs_distance = filter_neighs[np.argsort(pairwise.pairwise_distances(centers[filter_neighs], centers[clst].reshape(1, 2)).flatten())]   
         closest_neighs = neighs_distance [:min(len(filter_neighs), N)]
         
         return closest_neighs                 
@@ -192,7 +192,7 @@ class Clusters():
         sizes = cluster_sizes.copy()
         
         centers = list(map( lambda x : self.calculate_geo_cluster_center(cluster_labels, x), list(range(self.num_cluster))))      
-        centroids_dist_min = pairwise_distances_argmin(self.geo_data, centers)  
+        centroids_dist_min = pairwise.pairwise_distances_argmin(self.geo_data, centers)  
         
         filtering = [list(np.where(labels == x)[0]) for x in cluster_sizes.index]
         order_index = [ item for elem in filtering for item in elem]
@@ -239,52 +239,52 @@ class Clusters():
                 
         return labels, sizes
         
-    def get_osrm_distances (self, centers):
+    # def get_osrm_distances (self, centers):
         
-        # convert list of list in list of tuples
-        centers_data = list(map(tuple, centers)) 
-        points_data = list(map(tuple, self.geo_data.to_numpy())) 
+    #     # convert list of list in list of tuples
+    #     centers_data = list(map(tuple, centers)) 
+    #     points_data = list(map(tuple, self.geo_data.to_numpy())) 
         
-        totalPoints = len(points_data)
-        nPointsPerRequest = ceil(self.param.osrm_request_limit/self.num_cluster)
+    #     totalPoints = len(points_data)
+    #     nPointsPerRequest = ceil(self.param.osrm_request_limit/self.num_cluster)
         
-        # particionando data em blocos para cada requisição
-        subdata = [centers_data + points_data[x:x+nPointsPerRequest] for x in range(0, totalPoints, nPointsPerRequest)]       
-        parameters = [(subdata[x], self.num_cluster) for x in range(len(subdata))]
+    #     # particionando data em blocos para cada requisição
+    #     subdata = [centers_data + points_data[x:x+nPointsPerRequest] for x in range(0, totalPoints, nPointsPerRequest)]       
+    #     parameters = [(subdata[x], self.num_cluster) for x in range(len(subdata))]
         
-        centersDist = []
-        centersDura = []
+    #     centersDist = []
+    #     centersDura = []
         
-        # normal call
-        aux = 0
-        for x in parameters:
-            print(aux)
-            dataDist, dataDura = call_request(x[0], x[1])
-            centersDist.extend(dataDist)
-            centersDura.extend(dataDura)
-            aux +=1 
+    #     # normal call
+    #     aux = 0
+    #     for x in parameters:
+    #         print(aux)
+    #         dataDist, dataDura = call_request(x[0], x[1])
+    #         centersDist.extend(dataDist)
+    #         centersDura.extend(dataDura)
+    #         aux +=1 
             
-        #parallel call
-        # p = pool.Pool(pool.cpu_count())
-        # for dataDist, dataDura in p.starmap(call_request, parameters):
-        #     centersDist.extend(dataDist)
-        #     centersDura.extend(dataDura)
+    #     #parallel call
+    #     # p = pool.Pool(pool.cpu_count())
+    #     # for dataDist, dataDura in p.starmap(call_request, parameters):
+    #     #     centersDist.extend(dataDist)
+    #     #     centersDura.extend(dataDura)
   
-        # p.close()
-        # p.join()
+    #     # p.close()
+    #     # p.join()
 
-        matrixDist = np.array(centersDist)
-        matrixDura = np.array(centersDura)
+    #     matrixDist = np.array(centersDist)
+    #     matrixDura = np.array(centersDura)
         
-        return (matrixDist, matrixDura)
+    #     return (matrixDist, matrixDura)
 
     def fine_adjustement (self, cluster_labels, cluster_sizes):
         
         labels = cluster_labels.copy()
         sizes = cluster_sizes.copy()
         centers = list(map( lambda x : self.calculate_geo_cluster_center(labels, x), range(self.num_cluster)))
-                
-        centroids_dist = pairwise_distances(self.geo_data, centers)
+        
+        centroids_dist = pairwise.pairwise_distances(self.geo_data, centers)
         #centroids_dist_index = np.argsort(centroids_dist, axis=1)[:,:2]        
         #distance_list = list(map(lambda x ,y: y[x[1]] - y[x[0]], centroids_dist_index, centroids_dist))
         distance_index = np.argsort(np.min(centroids_dist, axis=1))[::-1]
@@ -292,7 +292,7 @@ class Clusters():
         connectivity = kneighbors_graph(self.geo_data, n_neighbors = 3, include_self = False).toarray()
         conn_df = pd.DataFrame(connectivity)
         df = conn_df * (labels+1) 
-                
+
         for i in distance_index:
             
             clt_neighbors = [int(x)-1 for x in df.iloc[i] if x>0 ]

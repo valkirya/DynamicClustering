@@ -1,7 +1,7 @@
 #************************************************************
 # Clustering Geospatial Data - Dynamic Clustering
 # Author: Julia Couto and Lara Cota
-# Mercado Envios
+# Mercado Envios - 2020
 #************************************************************
 
 '''
@@ -12,3 +12,5 @@ from src.interface import createGUI
 
 if __name__ == '__main__':
     createGUI()
+    
+    

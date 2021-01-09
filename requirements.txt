@@ -1,4 +1,6 @@
 # Python requirements:
 PySimpleGUI
-Pandas
-Folium
+pandas
+folium
+sklearn
+scipy
