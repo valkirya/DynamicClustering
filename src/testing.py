@@ -3,7 +3,7 @@
 from handler import Parameters, PreProcessing, PostProcessing
 from model import Clusters
 from measures import Measure
-from visualization import Plots
+#from visualization import Plots
 from logInfo import AppLogging 
 
 import time
@@ -127,7 +127,8 @@ def several_tests (inputs):
           
 def csv_test (inputs):
     
-    file_name = r"C:\Users\lcota\Desktop\SSP7.csv"
+    file_name = r"C:\Users\lcota\Desktop\SSP7PM.csv"
+    inputs = {'RoutingParameters': {'lower_bound_vol_filter': 0.001, 'upper_bound_vol_filter': 0.02}, 'ServiceCenterParameters': {'type': 'Auto'}}
     inputs['ServiceCenterParameters']['name'] = os.path.splitext(file_name)[0]
     run_model(inputs, file_name)
     

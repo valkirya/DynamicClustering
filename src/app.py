@@ -21,34 +21,36 @@ def resource_path(relative_path):
 
 # Main Function 
 def run_model (inputs, file_name = None):  
-    
+
     with open(resource_path('data/configuration.json'), encoding = 'UTF8') as input_json:
         configs = json.load(input_json)
-          
+   
     ####################### Reading Parameters ######################## 
     
-    param = Parameters (configs, inputs, file_name)
+    param = Parameters (configs, inputs, file_name)   
+    AppLogging.setConfig(param.output_directory)
     AppLogging.startMessage(param)
-    AppLogging.setConfig(param.output_directory)   
-    
+           
     ####################### Reading Input Data ########################   
     
-    input_data = PreProcessing.read_input_data (param.input_file)
-    input_data, alerts = PreProcessing.validate_input_data (input_data)
+    input_data = PreProcessing.read_input_data (param)
+    data, alerts = PreProcessing.filter_input_data(input_data) 
+    AppLogging.inputReadingMessage (alerts)
+    
+    data, alerts = PreProcessing.validate_input_data (data)
     AppLogging.inputValidationMessage (alerts)
     
-    data_repartition = PreProcessing.split_input_data (input_data, param.vol_filter_lower_bound, param.vol_filter_upper_bound, param.vol_filter_min_cluster_size)
+    data_repartition = PreProcessing.split_input_data (data, param.vol_filter_lower_bound, param.vol_filter_upper_bound, param.vol_filter_min_cluster_size)
     AppLogging.volumeFilteringMessage(data_repartition, param)
     
     try:
         for (key,value) in data_repartition.items():
             
             AppLogging.dataMessage(key, value)
-            split_data = input_data.iloc[value].reset_index(drop=True)
+            filter_data = data.iloc[value].reset_index(drop=True)
 
             ####################### Pre Processing Data ########################
-            
-            filter_data = PreProcessing.filter_input_data(split_data) 
+                        
             geo_data = PreProcessing.get_geolocate_data (filter_data)
             model_data = PreProcessing.get_scaled_data (geo_data)
       
