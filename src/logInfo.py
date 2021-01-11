@@ -1,4 +1,5 @@
 import logging
+import sys 
 
 class AppLogging ():
         
@@ -8,20 +9,28 @@ class AppLogging ():
         logging.basicConfig(filename = output_file, filemode= 'w', force = True, level=logLevel, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
                 
     def startMessage(param):
-        logging.info('Clustering Dynamic in execution with following settings:\nService Center:{}, Type:{}, Cluster max size:{}, Cluster min size:{}'.format(param.svc_name, param.type, param.cluster_max_size, param.cluster_min_size))
+        logging.info('Dynamic Clustering in execution with following settings:\nService Center:{}, Type:{}, Cluster max size:{}, Cluster min size:{}'.format(param.svc_name, param.type, param.cluster_max_size, param.cluster_min_size))
     
     def metricsMessage (min_num_cluster, num_tests, num_cluster):
         logging.info('Metrics:\nminimum number of cluster: {}, number of tests: {}, initial number of cluster: {}'.format(str(min_num_cluster), str(num_tests) , str(num_cluster)) )
         
-    def inputValidationMessage (alerts): logging.warning(alerts)
+    def inputReadingMessage (alerts):
+        if alerts: 
+            raise Exception(alerts)
+        
+    def inputValidationMessage (alerts):
+        if alerts:
+            raise Exception (alerts)
+        else:
+            logging.info(alerts)
              
     def volumeFilteringMessage (data_repartition, param):
         if len(data_repartition) > 1 :
-            logging.info('Volume Filtering: < {}, > {}, ClusterMin Size: {}'.format(param.vol_filter_lower_bound,param.vol_filter_upper_bound, param.vol_filter_min_cluster_size))
+            logging.info('Volume Filtering: < {}, > {}, Minimun size: {}'.format(param.vol_filter_lower_bound,param.vol_filter_upper_bound, param.vol_filter_min_cluster_size))
             
     def dataMessage (key, value):
         logging.info('\n')
-        logging.info('Running filtered data: {}, Data size: {}'.format("remain" if str(key) == "" else str(key), str(len(value))) )
+        logging.info('Data name: {}, Data size: {}'.format("Main" if str(key) == "" else str(key), str(len(value))) )
             
     def algorithmNameMessage (algo):    
         logging.info('Clustering algorithm used: {}'.format(algo))

@@ -21,8 +21,9 @@ class Measure():
         
         num_cluster_by_density = max(clustering.labels_)+1
         min_num_cluster = int((num_cluster_by_size+num_cluster_by_density)/2)
+        initial = max (2, min_num_cluster)
         
-        return int(min_num_cluster)
+        return initial
     
     def calculate_best_num_cluster (data, param, min_num_cluster):
         wcss, pts, labels = [] , []  , [] 
@@ -30,8 +31,8 @@ class Measure():
         
         balance_threshold = param.balance_feasibility_threshold        
         min_testing = min_num_cluster + param.num_experiments
-        n = min_num_cluster
-               
+        n = min_num_cluster      
+        
         # num test não fixo, minimo de 10 até respeitar balance threshold 
         while n <= min_testing or check_balance == 0: 
 
